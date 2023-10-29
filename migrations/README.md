@@ -64,10 +64,12 @@ The `AddCustomer()` function creates an "Add Customer" form, allowing users to i
 
 
 ## Installation
-1. Clone this repository to your local machine.
-2. Install the required dependencies using `pip install -r requirements.txt`.
-3. Run the Flask API server. You can typically do this with `python app.py`.
-4. Access the web application through your browser.
+1. Clone this repository to your local machine. Use the "git clone" command to clone the project.
+2. Navigate to the project directory.
+3. Create a virtual environment (recommended).
+4. Install the required dependencies using `pip install -r requirements.txt`.
+5. Run the Flask API server. You can typically do this with `python app.py`.
+6. Access the web application through your browser.
 
 
 ## Usage
