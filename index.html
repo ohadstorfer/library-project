@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- creating the nav bar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand">library <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/></svg>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <div class="btn-group">
+                        <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Books
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="printAllBooks()">All Books</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="printAvailibleBooks();">Available Books</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="printLoandBooks();">Loaned Books</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="printLateLoans();">Late Loans</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="AddBook()">Add Book</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Customers
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="printAllCustomers()">All Customers</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="printActiveCustomers()">Active Customers</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="AddCustomer()">Add Customers</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group ml-auto">
+                        <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Search Type
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="setSearchType('books')">Search Books</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchType('customers')">Search
+                                    Customers</a></li>
+                        </ul>
+                    </div>
+                    <form class="d-flex ml-auto" id="bookSearchForm">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                            id="bookSearchInput">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <div id="display"></div>
+
+
+
+    <script>
+
+
+
+
+
+
+
+        //************************************************************ searching books and customers *************************************************************** 
+
+
+
+        // Define a variable to store the current search type (books or customers)
+        let currentSearchType = 'books'; // Default to searching for books
+
+        // Function to set the search type based on user selection
+        function setSearchType(searchType) {
+            currentSearchType = searchType;
+            if (searchType === 'books') {
+                // Update the search form placeholder and action for searching books
+                document.getElementById('bookSearchInput').placeholder = 'Search Books';
+                document.getElementById('bookSearchForm').action = '/search_books'; // Set the appropriate endpoint for searching books
+            } else if (searchType === 'customers') {
+                // Update the search form placeholder and action for searching customers
+                document.getElementById('bookSearchInput').placeholder = 'Search Customers';
+                document.getElementById('bookSearchForm').action = '/search_customers'; // Set the appropriate endpoint for searching customers
+            }
+        }
+
+        // Initial setup to search for books by default
+        setSearchType('books');
+
+        // Handle form submission for book search
+        const bookSearchForm = document.getElementById("bookSearchForm");
+        bookSearchForm.addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent the default form submission behavior
+            const searchInput = document.getElementById("bookSearchInput").value.toLowerCase();
+
+        });
+
+        // Handle form submission for customer search
+        const customerSearchForm = document.getElementById("bookSearchForm"); // Use a different variable name
+        customerSearchForm.addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent the default form submission behavior
+            const searchInput = document.getElementById("bookSearchInput").value.toLowerCase();
+
+            // Check the current search type and call the appropriate search function
+            if (currentSearchType === 'books') {
+                searchBooks(searchInput); // Search for books
+            } else if (currentSearchType === 'customers') {
+                searchCustomers(searchInput); // Search for customers
+            }
+        })
+
+
+
+
+
+
+        // Function to search and display books
+        async function searchBooks(searchTerm) {
+            const res = await fetch("http://127.0.0.1:5000/books");
+            const books = await res.json();
+            console.log(books);
+            const loansRes = await fetch("http://127.0.0.1:5000/loans");
+            const loansData = await loansRes.json();
+            const loanedBookIds = [];
+            if (loansData && loansData.loans) {
+                for (const loan of loansData.loans) {
+                    loanedBookIds.push(loan.book_id);
+                }
+            }
+            console.log(loanedBookIds);
+
+            const displayDiv = document.getElementById("display");
+
+            // Clear the previous content in the display div
+            displayDiv.innerHTML = "";
+
+            // Filter books that match the search term
+            const matchingBooks = books.filter((book) => {
+                const bookName = book.name.toLowerCase();
+                return bookName.includes(searchTerm);
+            });
+            console.log(matchingBooks);
+
+            if (matchingBooks.length === 0) {
+                // If no matching books are found, display a message
+                displayDiv.innerHTML = "No books found matching your search.";
+            } else {
+                printBooks(matchingBooks);
+            }
+        }
+
+
+
+
+
+
+        // Function to search and display customers
+        async function searchCustomers(searchTerm) {
+            const res = await fetch("http://127.0.0.1:5000/customers"); // Assuming the endpoint for customers is '/customers'
+            const customers = await res.json();
+
+            const displayDiv = document.getElementById("display");
+
+            // Clear the previous content in the display div
+            displayDiv.innerHTML = "";
+
+            // Filter customers that match the search term
+            const matchingCustomers = customers.filter((customer) => {
+                const customerName = customer.name.toLowerCase();
+                return customerName.includes(searchTerm);
+            });
+
+            if (matchingCustomers.length === 0) {
+                // If no matching customers are found, display a message
+                displayDiv.innerHTML = "No customers found matching your search.";
+            } else {
+                printCustomers(matchingCustomers);
+            }
+        }
+
+
+
+
+
+
+
+
+        //************************************************************  functions that send books to printing  *************************************************************** 
+
+
+
+
+
+        // Function to fetch and display all customers from the Flask API
+        async function printAllBooks() {
+            // Send a GET request to your Flask API endpoint for fetching customers
+            const response = await fetch("http://127.0.0.1:5000/books");
+
+            if (response.ok) {
+                // If the response is successful, parse the JSON data
+                const books = await response.json();
+                console.log("the books are:", books);
+                printBooks(books)
+            } else {
+                // Handle errors if the response for fetching customers is not okay
+                console.error("Failed to fetch books data.");
+            }
+        }
+
+
+
+        // Function to fetch and display all customers from the Flask API
+        async function printAvailibleBooks() {
+            // Send a GET request to your Flask API endpoint for fetching customers
+            const response = await fetch("http://127.0.0.1:5000/books/available");
+
+            if (response.ok) {
+                // If the response is successful, parse the JSON data
+                const books = await response.json();
+                console.log("the availible books are:", books);
+                printBooks(books)
+            } else {
+                // Handle errors if the response for fetching customers is not okay
+                console.error("Failed to fetch books data.");
+            }
+        }
+
+
+
+        // Function to fetch and display all customers from the Flask API
+        async function printLoandBooks() {
+            // Send a GET request to your Flask API endpoint for fetching customers
+            const response = await fetch("http://127.0.0.1:5000/books/loaned");
+
+            if (response.ok) {
+                // If the response is successful, parse the JSON data
+                const books = await response.json();
+                console.log("the loaned books are:", books);
+                printBooks(books)
+            } else {
+                // Handle errors if the response for fetching customers is not okay
+                console.error("Failed to fetch books data.");
+            }
+        }
+
+
+        // Function to fetch and display late loans from the Flask API
+        async function printLateLoans() {
+            // Send a GET request to your Flask API endpoint for fetching loaned books
+            const response = await fetch("http://127.0.0.1:5000/books/loaned");
+
+            if (response.ok) {
+                // If the response is successful, parse the JSON data
+                const loanedBooks = await response.json();
+
+
+                // Create an array to collect late loans
+                const lateLoans = [];
+
+                // Iterate through the loaned books and collect late loans
+                for (const book of loanedBooks) {
+                    console.log(loanedBooks);
+                    console.log(book.is_loaned);
+                    if (book.is_loaned) {
+
+                        // Convert the return date to a Date object (assuming the format is consistent)
+                        const currentDate = formatDate(new Date());
+
+                        const returnDate = await gettingReturnDate(book.id);
+                        console.log("returnDate: ", returnDate);
+                        console.log("currentdate: ", currentDate);
+
+
+                        if (returnDate < currentDate) {
+                            // Add the late loan to the array
+                            lateLoans.push(book);
+                        }
+
+                    }
+                }
+
+                // Call the printBooks function with the array of late loans
+                printBooks(lateLoans);
+            }
+        }
+
+
+
+
+        //************************************************************  print books  **************************************************************************** 
+
+
+
+
+
+        // Function to fetch and display available books from the Flask API
+        async function printBooks(books) {
+
+
+            // Get the display div element by its ID
+            const displayDiv = document.getElementById("display");
+
+            // Clear any existing content in the display div
+            displayDiv.innerHTML = "";
+
+            // Iterate through the books and create card-style elements to display available books
+            for (const book of books) {
+                // Create a div element for each book card
+                const cardDiv = document.createElement("div");
+                cardDiv.className = "col-sm-2 mb-3 mb-sm-0 ";
+                cardDiv.style.marginLeft = "10px";
+
+                // Create a card element
+                const card = document.createElement("div");
+                card.className = "card text-bg-light border-dark mb-3";
+
+
+                // Create a card body element
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body ";
+
+                // Create a card title element for the book title
+                const cardTitle = document.createElement("h5");
+                cardTitle.className = "card-title";
+                cardTitle.textContent = book.name;
+
+                // Create a card text element for book details (e.g., author, year_published)
+                const cardText = document.createElement("p");
+                cardText.className = "card-text";
+                cardText.innerHTML = `
+                Author: ${book.author}<br>
+                Year Published: ${book.year_published}<br>
+            `;
+
+
+
+                // Create a loan button
+                const loanButton = document.createElement("button");
+                loanButton.textContent = "Loan";
+                loanButton.className = "btn btn-primary";
+                loanButton.addEventListener("click", () => {
+                    // Call a function to handle the loan action
+                    handleLoanAction(book.id);
+                });
+
+                // Create a return button
+                const returnButton = document.createElement("button");
+                returnButton.textContent = "Return";
+                returnButton.className = "btn btn-success";
+                returnButton.addEventListener("click", () => {
+                    // Handle logic for returning the book here
+                    handleReturnAction(book.id);
+                });
+
+                // Create a return button FOR LATE LOANS
+                const LateBooksReturnButton = document.createElement("button");
+                LateBooksReturnButton.textContent = "Return";
+                LateBooksReturnButton.className = "btn btn-danger";
+                LateBooksReturnButton.addEventListener("click", () => {
+                    // Handle logic for returning the book here
+                    handleReturnAction(book.id);
+                });
+
+                // Create a delete button
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "btn btn-outline-secondary";
+                deleteButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h 6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                </svg>`;
+                deleteButton.addEventListener("click", () => {
+                    // Call the deleteBookById function with the book's ID when the delete button is clicked
+                    deleteBookById(book.id);
+                });
+
+                // Append card title and card text to card body
+                cardBody.appendChild(cardTitle);
+
+                // Append card text to card body
+                cardBody.appendChild(cardText);
+
+                // Append card body to card
+                card.appendChild(cardBody);
+
+                // Check if the book is already loaned
+                if (book.is_loaned) {
+                    // Fetch and add loan details to the card text
+                    try {
+                        const loanDetails = await fetchLoanDetails(book.id);
+                        cardText.innerHTML += loanDetails;
+
+                        // Get the current date
+                        const currentDate = formatDate(new Date());
+
+                        // Convert the return date to a Date object (assuming the format is consistent)
+                        const returnDate = await gettingReturnDate(book.id);
+
+                        console.log(returnDate < currentDate);
+                        // Check if the return date has passed
+                        if (returnDate < currentDate) {
+                            // Create a card footer for late loans
+                            const cardFooter = document.createElement("div");
+                            cardFooter.className = "card-footer border-danger bg-transparent border";
+                            cardFooter.textContent = "The return date for this book has expaired!";
+                            cardBody.appendChild(LateBooksReturnButton);
+                            card.appendChild(cardFooter);
+                        }
+                        else { cardBody.appendChild(returnButton); }
+
+                        console.log("returnDate: ", returnDate);
+                        console.log("currentDate: ", currentDate);
+
+                    } catch (error) {
+                        console.error("Error fetching loan details: ", error);
+                    }
+                } else {
+                    cardBody.appendChild(loanButton);
+                }
+
+                // Append the delete button to the card body
+                cardBody.appendChild(deleteButton);
+
+
+                // Append card to the display div
+                cardDiv.appendChild(card);
+
+                // Append the card div to the display div
+                displayDiv.appendChild(cardDiv);
+            }
+        }
+
+
+
+
+
+        async function fetchLoanDetails(bookId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/loans/book/${bookId}`);
+                if (response.ok) {
+                    const loanData = await response.json();
+                    if (loanData.length > 0) {
+                        const loan = loanData[0]; // Assuming one book can have at most one loan
+
+                        // Fetch the customer details for this loan
+                        const customerResponse = await fetch(`http://127.0.0.1:5000/customers/${loan.customer_id}`);
+                        if (customerResponse.ok) {
+                            const customer = await customerResponse.json();
+
+                            return `
+                            <br> 
+                    Currently Loaned by: ${customer.name}<br>
+                    Loan Date: ${loan.loan_date}<br>
+                    Return Date: ${loan.return_date}<br>
+                `;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching loan details: ", error);
+            }
+            return '';
+        }
+
+
+
+
+        async function fetchCustomerLoans(customerId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/loans/customer/${customerId}`);
+                if (response.ok) {
+                    const loansData = await response.json();
+                    if (loansData.length > 0) {
+                        const loans = loansData;
+
+                        // Fetch book details for each loan
+                        const bookDetails = await Promise.all(
+                            loans.map(async (loan) => {
+                                const bookResponse = await fetch(`http://127.0.0.1:5000/books/${loan.book_id}`);
+                                if (bookResponse.ok) {
+                                    const book = await bookResponse.json();
+                                    return `
+                                "This customer is currently loaning the book: ${book.name}" 
+                                Loan Date: ${loan.loan_date}
+                                Return Date: ${loan.return_date}
+                                `;
+                                }
+                            })
+                        );
+
+                        return bookDetails.join('<br><br>');
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching customer loans: ", error);
+            }
+            return 'No loans found for this customer.';
+        }
+
+
+
+
+        async function gettingReturnDate(bookId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/loans/book/${bookId}`);
+                if (response.ok) {
+                    const loanData = await response.json();
+                    if (loanData.length > 0) {
+                        const loan = loanData[0]; // Assuming one book can have at most one loan
+                        return loan.return_date;
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching return date: ", error);
+            }
+            return '';
+        }
+
+
+
+        //************************************************************    add a book   **************************************************************************** 
+
+
+
+
+
+        function AddBook() {
+            // Clear the previous content in the display div
+            const displayDiv = document.getElementById("display");
+
+            // Create the "Add Book" form HTML
+            const addBookFormHTML = `
+                <form id="addBookForm">
+                    <div class="mb-3">
+                        <label for="bookName" class="form-label">Name:</label>
+                        <input type="text" class="form-control form-control-lg" id="bookName" placeholder="Enter book name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookAuthor" class="form-label">Author:</label>
+                        <input type="text" class="form-control form-control-lg" id="bookAuthor" placeholder="Enter book author" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookYear" class="form-label">Year Published:</label>
+                        <input type="text" class="form-control form-control-lg" id="bookYear" placeholder="Enter year published" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookType" class="form-label">Type:</label>
+                        <select class="form-select" id="bookType" required>
+                            <option value="1">10 days</option>
+                            <option value="2">5 days</option>
+                            <option value="3">2 days</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Book</button>
+                </form>
+            `;
+
+            // Set the innerHTML of the displayDiv to the addBookFormHTML
+            displayDiv.innerHTML = addBookFormHTML;
+
+            // Add an event listener to the form for handling the submission
+            const addBookForm = document.getElementById("addBookForm");
+            addBookForm.addEventListener("submit", async function (e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                // Retrieve user input from the form
+                const name = document.getElementById("bookName").value;
+                const author = document.getElementById("bookAuthor").value;
+                const yearPublished = document.getElementById("bookYear").value;
+                const type = document.getElementById("bookType").value; // Get the selected type
+
+                // Create a new book object with the data, including the "type"
+                const newBook = {
+                    "name": name,
+                    "author": author,
+                    "year_published": yearPublished,
+                    "type": type, // Include the selected type
+                };
+
+                try {
+                    // Send a POST request to your Flask API to add the new book
+                    const response = await fetch("http://127.0.0.1:5000/books", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(newBook),
+                    });
+
+                    if (response.ok) {
+                        // Book added successfully, display a success message
+                        const successMessage = document.createElement("div");
+                        successMessage.textContent = "Book added successfully!";
+                        successMessage.classList.add("alert", "alert-success");
+                        displayDiv.appendChild(successMessage);
+                    } else {
+                        // Handle errors if the POST request fails
+                        console.error("Failed to add the book.");
+                        alert("Failed to add the book.");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("An error occurred while adding the book.");
+                }
+            });
+
+            
+
+        }
+
+
+
+
+        //************************************************************    delete books   **************************************************************************** 
+
+
+
+
+
+        // Function to send a DELETE request to delete a book by ID
+        async function deleteBookById(bookId) {
+            try {
+                // Check if the book is loaned
+                const isLoaned = await checkIfBookIsLoaned(bookId);
+
+                if (isLoaned) {
+                    alert("This book is currently loaned and cannot be deleted.");
+                    return;
+                }
+
+                // Display a confirmation dialog to confirm the deletion
+                if (window.confirm("Are you sure you want to delete this book?")) {
+                    const response = await fetch(`http://127.0.0.1:5000/books/${bookId}`, {
+                        method: "DELETE",
+                    });
+
+                    if (response.ok) {
+                        // Show a success toast notification
+                        toastr.success("Book deleted successfully");
+
+                        // Wait for a moment to allow the user to see the notification
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                        // Perform any additional actions (e.g., update the UI)
+                        printAllBooks();
+                    } else {
+                        // Handle errors if the delete request fails
+                        console.error("Failed to delete the book.");
+                        toastr.error("Failed to delete the book");
+                    }
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                toastr.error("An error occurred while deleting the book");
+            }
+        }
+
+        async function checkIfBookIsLoaned(bookId) {
+            const response = await fetch(`http://127.0.0.1:5000/books/${bookId}/is-loaned`);
+            if (response.ok) {
+                const result = await response.json();
+                return result.is_loaned;
+            } else {
+                return false; // If an error occurs, assume the book is not loaned
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        //*********************************************** functions that send customers to printing ****************************************************************************
+
+
+
+
+
+        // Function to fetch and display all customers from the Flask API
+        async function printAllCustomers() {
+            // Send a GET request to your Flask API endpoint for fetching customers
+            const response = await fetch("http://127.0.0.1:5000/customers");
+
+            if (response.ok) {
+                // If the response is successful, parse the JSON data
+                const customers = await response.json();
+                console.log("the customers are:", customers);
+                printCustomers(customers)
+            } else {
+                // Handle errors if the response for fetching customers is not okay
+                console.error("Failed to fetch customers data.");
+            }
+        }
+
+
+
+
+
+        async function printActiveCustomers() {
+            try {
+                // Fetch all customers
+                const response = await fetch("http://127.0.0.1:5000/customers/active-loans");
+                if (response.ok) {
+                    const customers = await response.json();
+                    console.log("the customers are:", customers);
+                    printCustomers(customers);
+                }
+            }
+            catch (error) {
+                console.error("Error fetching customers with loans: ", error);
+            }
+        }
+
+
+
+
+        //*********************************************** printing customers ***************************************************************
+
+
+
+
+        // Function to fetch and display all customers from the Flask API
+        async function printCustomers(customers) {
+
+            // Get the display div element by its ID
+            const displayDiv = document.getElementById("display");
+
+            // Clear any existing content in the display div
+            displayDiv.innerHTML = "";
+
+
+
+            // Iterate through the customers and create card-style elements to display customer information
+            for (const customer of customers) {
+                // Create a div element for each customer card
+                const cardDiv = document.createElement("div");
+                cardDiv.className = "col-sm-2 mb-3 mb-sm-0";
+                cardDiv.style.marginLeft = "10px"; 
+
+
+                // Create a card element
+                const card = document.createElement("div");
+                card.className = "card text-bg-light border-dark mb-3";
+
+                // Create a card body element
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+
+                // Create a card title element for the customer's name
+                const cardTitle = document.createElement("h5");
+                cardTitle.className = "card-title";
+                cardTitle.textContent = customer.name;
+
+                // Create a card text element for customer details (e.g., city, age)
+                const cardText = document.createElement("p");
+                cardText.className = "card-text";
+                cardText.innerHTML = `
+                        City: ${customer.city}<br>
+                        Age: ${customer.age}
+                    `;
+
+
+                // Create a delete button for customers
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "btn btn-outline-secondary";
+                deleteButton.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                </svg>`;
+                deleteButton.addEventListener("click", () => {
+                    // Call the deleteCustomerById function with the customer's ID when the delete button is clicked
+                    deleteCustomerById(customer.id);
+                });
+
+                // Append card title and card text to card body
+                cardBody.appendChild(cardTitle);
+                cardBody.appendChild(cardText);
+
+                // Append the delete button to the card body
+                cardBody.appendChild(deleteButton);
+
+                // Append card body to card
+                card.appendChild(cardBody);
+
+                try {
+                    const cusloanDetails = await fetchCustomerLoans(customer.id);
+                    if (fetchCustomerLoans) {
+                        cardText.innerHTML += cusloanDetails;
+                        // Get the current date
+                        const currentDate = formatDate(new Date());
+
+                        // Convert the return date to a Date object (assuming the format is consistent)
+                        const returnDate = await gettingReturnDateforCus(customer.id);
+
+                        console.log(returnDate < currentDate);
+                        // Check if the return date has passed
+                        if (returnDate < currentDate) {
+                            // Create a card footer for late loans
+                            const cardFooter = document.createElement("div");
+                            cardFooter.className = "card-footer border-danger bg-transparent border";
+                            cardFooter.textContent = "This customer needs to return his book immediately!";
+                            card.appendChild(cardFooter);
+                        }
+
+
+                        console.log("returnDate: ", returnDate);
+                        console.log("currentDate: ", currentDate);
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching loan details: ", error);
+                }
+
+
+                // Append card to the display div
+                cardDiv.appendChild(card);
+
+                // Append the card div to the display div
+                displayDiv.appendChild(cardDiv);
+            };
+        }
+
+
+
+
+
+        async function fetchCustomerLoans(customerId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/loans/customer/${customerId}`);
+                if (response.ok) {
+                    const loansData = await response.json();
+                    if (loansData.length > 0) {
+                        const loans = loansData;
+
+                        // Fetch book details for each loan
+                        const bookDetails = await Promise.all(
+                            loans.map(async (loan) => {
+                                const bookResponse = await fetch(`http://127.0.0.1:5000/books/${loan.book_id}`);
+                                if (bookResponse.ok) {
+                                    const book = await bookResponse.json();
+                                    return ` <br> <br>
+                                This customer is currently loaning the book: ${book.name} <br>
+                                Loan Date: ${loan.loan_date}<br>
+                                Return Date: ${loan.return_date}<br>
+                                `;
+                                }
+                            })
+                        );
+
+                        return bookDetails.join('<br><br>');
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching customer loans: ", error);
+            }
+            return ""
+        }
+
+
+
+        async function gettingReturnDateforCus(customerId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/loans/customer/${customerId}`);
+                if (response.ok) {
+                    const loansData = await response.json();
+                    if (loansData.length > 0) {
+                        const loans = loansData;
+
+                        // Fetch book details for each loan
+                        const bookDetails = await Promise.all(
+                            loans.map(async (loan) => {
+                                const bookResponse = await fetch(`http://127.0.0.1:5000/books/${loan.book_id}`);
+                                if (bookResponse.ok) {
+                                    const book = await bookResponse.json();
+                                    return loan.return_date;
+                                }
+                            })
+                        );
+
+                        return bookDetails.join('<br><br>');
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching customer loans: ", error);
+            }
+            return false;
+        }
+
+
+
+
+
+        //************************************************************   loan a book    *************************************************************** 
+
+
+
+
+
+
+        async function handleLoanAction(bookId) {
+            const customerName = prompt("Enter the customer's name:");
+            if (customerName) {
+                const customers = await searchCustomersByName(customerName);
+
+                if (customers.length === 0) {
+                    alert("Customer not found.");
+                } else if (customers.length >= 1) {
+                    // Always present a list to the user
+                    let customerOptions = "Select a customer by number:\n";
+                    customers.forEach((customer, index) => {
+                        customerOptions += `${index + 1}. ${customer.name}\n`;
+                    });
+
+                    const selectedCustomerIndex = parseInt(prompt(customerOptions));
+                    if (isNaN(selectedCustomerIndex) || selectedCustomerIndex < 1 || selectedCustomerIndex > customers.length) {
+                        alert("Invalid selection.");
+                    } else {
+                        const customer = customers[selectedCustomerIndex - 1];
+                        const returnDate = calculateReturnDate(await getBookType(bookId));
+                        const loanData = {
+                            customer_id: customer.id,
+                            book_id: bookId,
+                            loan_date: formatDate(new Date()),
+                            return_date: returnDate
+                        };
+                        const response = await createLoan(loanData);
+
+                        if (response.ok) {
+                            alert("Loan created successfully!");
+                        } else {
+                            alert("Failed to create the loan.");
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        // Function to fetch customer details by ID or name
+        async function fetchCustomerDetails(input) {
+            // Send a GET request to your Flask API to fetch customer details
+            const response = await fetch(`http://127.0.0.1:5000/customers/${input}`);
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return null;
+            }
+        }
+
+
+
+        // Function to determine the book type (1, 2, or 3) based on the book ID
+        async function getBookType(bookId) {
+            try {
+                // Make a GET request to your Flask API to retrieve book details
+                const response = await fetch(`http://127.0.0.1:5000/books/${bookId}`);
+
+                if (response.ok) {
+                    // If the response is successful, parse and return the book type
+                    const book = await response.json();
+                    return book.type;
+                } else {
+                    // Log an error message if the book is not found or an error occurs
+                    console.error('Error fetching book details:', response.status, response.statusText);
+                    return 0; // Return a default type
+                }
+            } catch (error) {
+                // Log an error message for unexpected errors
+                console.error('Unexpected error while fetching book details:', error);
+                return 0; // Return a default type
+            }
+        }
+
+
+
+        function calculateReturnDate(bookType) {
+            const loanDate = new Date();
+            const returnDate = new Date(loanDate); // Create a copy of the loan date
+
+            if (bookType === 1) {
+                // Add 10 days for type 1
+                returnDate.setDate(returnDate.getDate() + 10);
+                console.log("added 10 days");
+            } else if (bookType === 2) {
+                // Add 5 days for type 2
+                returnDate.setDate(returnDate.getDate() + 5);
+            } else if (bookType === 3) {
+                // Add 2 days for type 3
+                returnDate.setDate(returnDate.getDate() + 2);
+            }
+            else {
+                console.log(bookType);
+            }
+
+
+
+            // Convert the return date to a 'YYYY-MM-DD' formatted string
+            const formattedReturnDate = formatDate(returnDate);
+            console.log("after calculating, return date: ", formattedReturnDate);
+            return formattedReturnDate;
+        }
+
+
+        function formatDate(date) {
+            const year = date.getUTCFullYear();
+            const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+            const day = date.getUTCDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+
+        // Function to send a POST request to create a loan
+        async function createLoan(loanData) {
+            // Send a POST request to your Flask API to create the loan
+            const response = await fetch("http://127.0.0.1:5000/loans", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(loanData),
+            });
+
+            return response;
+        }
+
+
+        async function searchCustomersByName(name) {
+            const response = await fetch(`http://127.0.0.1:5000/customers/search?name=${name}`);
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return [];
+            }
+        }
+
+
+
+
+
+
+        //************************************************************   return a book    *************************************************************** 
+
+
+
+
+
+
+        // Function to handle returning a book
+        async function handleReturnAction(bookId) {
+            if((window.confirm("Are you sure that the customer has returned this book?")))
+            {
+            try {
+
+                const loanId = await findLoanIdByBookId(bookId);
+
+                // Send a DELETE request to your Flask API to delete the loan record
+                const response = await deleteLoan(loanId);
+
+                if (response.ok) {
+                    // Update the UI to reflect the return action (e.g., remove the "Return" button)
+                    console.log("Book returned successfully");
+                    // You can implement any additional UI updates here
+
+                } else {
+                    // Handle errors or show an error message
+                    console.error("Failed to return the book.");
+                    // You can display an error message to the user
+                }
+            } catch (error) {
+                console.error("An unexpected error occurred:", error);
+                // Handle unexpected errors and display an error message to the user
+            }
+        }
+        }
+
+
+
+
+        // Function to find the loan ID associated with a book ID
+        function findLoanIdByBookId(bookId) {
+            // Send a GET request to your Flask API to fetch loans
+            return fetch("http://127.0.0.1:5000/loans")
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch loans data");
+                    }
+                    return response.json();
+                })
+                .then((loans) => {
+                    // Find the loan with the specified book ID
+                    const loan = loans.find((loan) => loan.book_id === bookId);
+                    if (loan) {
+                        return loan.id; // Return the loan ID
+                    } else {
+                        throw new Error("Loan not found for the book");
+                    }
+                });
+        }
+
+
+
+
+
+        // Function to send a DELETE request to delete a loan record
+        async function deleteLoan(loanId) {
+            try {
+                // Send a DELETE request to your Flask API to delete the loan record by book ID
+                const response = await fetch(`http://127.0.0.1:5000/loans/${loanId}`, {
+                    method: "DELETE",
+                });
+
+                return response;
+            } catch (error) {
+                console.error("Error sending DELETE request:", error);
+                throw error; // Propagate the error to the calling function
+            }
+        }
+
+
+
+
+        //************************************************************   delete a customer   ****************************************************************************
+
+
+
+
+        async function deleteCustomerById(customerId) {
+            try {
+                // Check if the customer has active loans
+                const hasActiveLoans = await checkIfCustomerHasActiveLoans(customerId);
+                console.log(hasActiveLoans);
+                if (hasActiveLoans) {
+                    alert("This customer currently has a loaned book and cannot be deleted.");
+                    return;
+                }
+
+                // Display a confirmation dialog to confirm the deletion
+                if (window.confirm("Are you sure you want to delete this customer?")) {
+                    const response = await fetch(`http://127.0.0.1:5000/customers/${customerId}`, {
+                        method: "DELETE",
+                    });
+
+                    if (response.ok) {
+                        // Show a success toast notification
+                        toastr.success("Customer deleted successfully");
+
+                        // Wait for a moment to allow the user to see the notification
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                        // Perform any additional actions (e.g., update the UI)
+                        printAllCustomers();
+                    } else {
+                        // Handle errors if the delete request fails
+                        console.error("Failed to delete the customer.");
+                        toastr.error("Failed to delete the customer");
+                    }
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                toastr.error("An error occurred while deleting the customer");
+            }
+        }
+
+
+
+
+
+
+
+        async function checkIfCustomerHasActiveLoans(customerId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/customers/${customerId}/has-active-loans`);
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(result);
+                    return result.has_active_loans;
+                } else {
+                    return false; // If an error occurs, assume the customer doesn't have active loans
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                return false;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        //************************************************************   add a customer   **************************************************************************** 
+
+
+
+
+
+
+        function AddCustomer() {
+            // Clear the previous content in the display div
+            const displayDiv = document.getElementById("display");
+
+            // Create the "Add Customer" form HTML
+            const addCustomerFormHTML = `
+        <form id="addCustomerForm">
+            <div class="mb-3">
+                <label for="customerName" class="form-label">Name:</label>
+                <input type="text" class="form-control form-control-lg" id="customerName" placeholder="Enter customer name" required>
+            </div>
+            <div class="mb-3">
+                <label for="customerCity" class="form-label">City:</label>
+                <input type="text" class="form-control form-control-lg" id="customerCity" placeholder="Enter customer city" required>
+            </div>
+            <div class="mb-3">
+                <label for="customerAge" class="form-label">Age:</label>
+                <input type="text" class="form-control form-control-lg" id="customerAge" placeholder="Enter customer age" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Customer</button>
+        </form>
+    `;
+
+            // Set the innerHTML of the displayDiv to the addCustomerFormHTML
+            displayDiv.innerHTML = addCustomerFormHTML;
+
+            // Add an event listener to the form for handling the submission
+            const addCustomerForm = document.getElementById("addCustomerForm");
+            addCustomerForm.addEventListener("submit", async function (e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                // Retrieve user input from the form
+                const name = document.getElementById("customerName").value;
+                const city = document.getElementById("customerCity").value;
+                const age = document.getElementById("customerAge").value;
+
+                // Create a new customer object with the data
+                const newCustomer = {
+                    "name": name,
+                    "city": city,
+                    "age": age,
+                };
+
+                try {
+                    // Send a POST request to your Flask API to add the new customer
+                    const response = await fetch("http://127.0.0.1:5000/customers", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(newCustomer),
+                    });
+
+                    if (response.ok) {
+                        // Customer added successfully, display a success message
+                        const successMessage = document.createElement("div");
+                        successMessage.textContent = "Customer added successfully!";
+                        successMessage.classList.add("alert", "alert-success");
+                        displayDiv.appendChild(successMessage);
+                    } else {
+                        // Handle errors if the POST request fails
+                        console.error("Failed to add the customer.");
+                        alert("Failed to add the customer.");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("An error occurred while adding the customer.");
+                }
+            });
+        }
+
+
+
+
+        // Call the printAllBooks function to load books when the page loads
+        printAllBooks();
+    </script>
+
+
+
+
+</body>
+
+</html>
